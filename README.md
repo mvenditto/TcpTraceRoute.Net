@@ -140,11 +140,28 @@ https://dreampuf.github.io/GraphvizOnline/#digraph%20%7B%0D%0A%20%20%7B%[...TRUN
 </pre>
   
 [See render at dreampuf.github.io/GraphvizOnline](https://dreampuf.github.io/GraphvizOnline/#digraph%20%7B%0D%0A%20%20%7B%0D%0A%20%20%20%20host%0D%0A%20%20%20%201%5Blabel%3D%22192.168.1.1%22%20%5D%0D%0A%20%20%20%202%5Blabel%3D%22151.6.142.56%22%20%5D%0D%0A%20%20%20%203%5Blabel%3D%22151.6.57.40%22%20%5D%0D%0A%20%20%20%204%5Blabel%3D%22151.6.0.190%22%20%5D%0D%0A%20%20%20%205%5Blabel%3D%22151.6.7.239%22%20%5D%0D%0A%20%20%20%206%5Blabel%3D%2280.81.194.26%22%20%5D%0D%0A%20%20%20%207%5Blabel%3D%2264.125.30.254%22%20%5D%0D%0A%20%20%20%208%5Blabel%3D%2264.125.29.65%22%20%5D%0D%0A%20%20%20%209%5Blabel%3D%2282.98.193.29%22%20%5D%0D%0A%20%20%20%2010%5Blabel%3D%22%2A%22%20color%3Dred%5D%0D%0A%20%20%20%2011%5Blabel%3D%22%2A%22%20color%3Dred%5D%0D%0A%20%20%20%2012%5Blabel%3D%22140.82.121.4%22%20%5D%0D%0A%20%20%7D%0D%0A%20%20host-%3E1%20%5Blabel%3D%22%20%202.228%20ms%22%5D%0D%0A%20%20host-%3E2%20%5Blabel%3D%22%20%208.137%20ms%22%20style%3Ddotted%5D%0D%0A%20%201-%3E2%20%5Blabel%3D%22%20%2010.364%20ms%22%5D%0D%0A%20%20host-%3E3%20%5Blabel%3D%22%20%206.886%20ms%22%20style%3Ddotted%5D%0D%0A%20%202-%3E3%20%5Blabel%3D%22%20%2017.250%20ms%22%5D%0D%0A%20%20host-%3E4%20%5Blabel%3D%22%20%2026.925%20ms%22%20style%3Ddotted%5D%0D%0A%20%203-%3E4%20%5Blabel%3D%22%20%2044.175%20ms%22%5D%0D%0A%20%20host-%3E5%20%5Blabel%3D%22%20%2022.965%20ms%22%20style%3Ddotted%5D%0D%0A%20%204-%3E5%20%5Blabel%3D%22%20%2067.140%20ms%22%5D%0D%0A%20%20host-%3E6%20%5Blabel%3D%22%20%2023.855%20ms%22%20style%3Ddotted%5D%0D%0A%20%205-%3E6%20%5Blabel%3D%22%20%2090.995%20ms%22%5D%0D%0A%20%20host-%3E7%20%5Blabel%3D%22%20%2024.454%20ms%22%20style%3Ddotted%5D%0D%0A%20%206-%3E7%20%5Blabel%3D%22%20%20115.449%20ms%22%5D%0D%0A%20%20host-%3E8%20%5Blabel%3D%22%20%2062.802%20ms%22%20style%3Ddotted%5D%0D%0A%20%207-%3E8%20%5Blabel%3D%22%20%20178.252%20ms%22%5D%0D%0A%20%20host-%3E9%20%5Blabel%3D%22%20%2019.341%20ms%22%20style%3Ddotted%5D%0D%0A%20%208-%3E9%20%5Blabel%3D%22%20%20197.593%20ms%22%5D%0D%0A%20%20host-%3E10%20%5Blabel%3D%22%20%20-1.000%20ms%22%20style%3Ddotted%5D%0D%0A%20%209-%3E10%20%5Blabel%3D%22%20%20197.593%20ms%22%5D%0D%0A%20%20host-%3E11%20%5Blabel%3D%22%20%20-1.000%20ms%22%20style%3Ddotted%5D%0D%0A%20%2010-%3E11%20%5Blabel%3D%22%20%20197.593%20ms%22%5D%0D%0A%20%20host-%3E12%20%5Blabel%3D%22%20%2019.376%20ms%22%20style%3Ddotted%5D%0D%0A%20%2011-%3E12%20%5Blabel%3D%22%20%20216.969%20ms%22%5D%0D%0A%7D%0D%0A=)
-
-<image src="/Docs/traceroute.svg">
   
 </details>
+    
+## Addition features
+## Route graph generation with `--dot`
+`tcptraceroute-net github.com -q 1 --dot`
+    
+ See the *Cli - Samples* section for more details.
 
+<picture>
+<source
+  srcset="/Docs/traceroute_dark.svg"
+  media="(prefers-color-scheme: dark)"
+/>
+<source
+  srcset="/Docs/traceroute.svg"
+  media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
+/>
+<img src="/Docs/traceroute.svg" height="1000">
+</picture>
+
+    
 ## Code
 ```csharp
 var dstAddress = IPAddress.Parse("8.8.8.8");
