@@ -60,12 +60,14 @@ static async Task DoTraceRoute(TcpTraceRouteOptions opts, bool debug)
     {
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss.fff} {Level:u3}] [{ProbeId:D5}] {Message}{NewLine}{Exception}")
-            .MinimumLevel.Information()
+            .MinimumLevel.Debug()
             .Enrich.FromLogContext()
             .CreateLogger();
 
         logger = new SerilogLoggerFactory(Log.Logger).CreateLogger("TcpTraceRoute");
     }
+
+    var stdout = debug ? TextWriter.Null : Console.Out;
 
     if (opts.TrackPort)
     {
@@ -97,18 +99,18 @@ static async Task DoTraceRoute(TcpTraceRouteOptions opts, bool debug)
         logger: logger);
 
 
-    Console.Write($"Selected device {device.FriendlyName()} ({device.Description}), address {opts.SourceAddress}");
+    stdout.Write($"Selected device {device.FriendlyName()} ({device.Description}), address {opts.SourceAddress}");
 
     if (!opts.TrackPort)
     {
-        Console.Write($", port {opts.SourcePort}");
+        stdout.Write($", port {opts.SourcePort}");
     }
 
-    Console.WriteLine(" for outgoing packets");
+    stdout.WriteLine(" for outgoing packets");
 
     int lastTtl = 1;
 
-    Console.WriteLine();
+    stdout.WriteLine();
 
     traceroute.ProbeCompleted += (_, e) =>
     {
@@ -118,7 +120,7 @@ static async Task DoTraceRoute(TcpTraceRouteOptions opts, bool debug)
         if (probe.Ttl != lastTtl)
         {
             lastTtl = probe.Ttl;
-            Console.WriteLine();
+            stdout.WriteLine();
         }
 
         // first query, write the host
@@ -126,28 +128,35 @@ static async Task DoTraceRoute(TcpTraceRouteOptions opts, bool debug)
         {
             var hopAddr = probe.Address == IPAddress.Any ? "*" : probe.Address.ToString();
             var state = string.IsNullOrEmpty(probe.State) ? "" : $"[{probe.State}]";
-            Console.Write($"{probe.Ttl,2}  {hopAddr,-15}  {probe.String ?? ""}{state}  ");
+            stdout.Write($"{probe.Ttl,2}  {hopAddr,-15}  {probe.String ?? ""}{state}  ");
         }
 
         // write the query latency
         if (probe.Delta > 0 && probe.Address != IPAddress.Any)
         {
-            Console.Write(probe.Delta.ToString("0.000", CultureInfo.InvariantCulture) + " ms  ");
+            stdout.Write(probe.Delta.ToString("0.000", CultureInfo.InvariantCulture) + " ms  ");
         }
         else
         {
-            Console.Write("*  ");
+            stdout.Write("*  ");
         }
     };
 
-    Console.Write($"Tracing the path to {opts.DestinationAddress} on TCP port {opts.TcpDestinationPort}, {opts.MaxTtl} hops max");
+    var dst = $"{opts.DestinationHostName}";
+
+    if (opts.DestinationHostName != opts.DestinationAddress.ToString())
+    {
+        dst += $" ({opts.DestinationAddress})";
+    }
+
+    stdout.Write($"Tracing the path to {dst} on TCP port {opts.TcpDestinationPort}, {opts.MaxTtl} hops max");
 
     if (opts.PacketLength > 0)
     {
-        Console.Write($", {opts.PacketLength + 20 + 20} byte packets");
+        stdout.Write($", {opts.PacketLength + 20 + 20} byte packets");
     }
 
-    Console.WriteLine();
+    stdout.WriteLine();
 
     var result = traceroute.Run();
 
@@ -157,10 +166,10 @@ static async Task DoTraceRoute(TcpTraceRouteOptions opts, bool debug)
 
     if (!destinationReached)
     {
-        Console.WriteLine("Destination not reached");
+        stdout.WriteLine("Destination not reached");
     }
 
-    Console.WriteLine();
+    stdout.WriteLine();
 }
 
 rootCommand.SetHandler(

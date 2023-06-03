@@ -19,7 +19,7 @@ internal class TcpTraceRouteOptionsBinder : BinderBase<TcpTraceRouteOptions>
     private readonly Option<ushort> _srcPort;
     private readonly Option<int> _timeout;
     private readonly Argument<ushort> _dstPort;
-    private readonly Argument<string> _dstAddress;
+    private readonly Argument<string> _dstHostOrAddress;
     private readonly Option<bool> _syn;
     private readonly Option<bool> _ack;
     private readonly Option<bool> _ecn;
@@ -59,7 +59,7 @@ internal class TcpTraceRouteOptionsBinder : BinderBase<TcpTraceRouteOptions>
         _srcPort = srcPort;
         _timeout = timeout;
         _dstPort = dstPort;
-        _dstAddress = dstAddress;
+        _dstHostOrAddress = dstAddress;
         _syn = syn;
         _ack = ack;
         _ecn = ecn;
@@ -77,6 +77,15 @@ internal class TcpTraceRouteOptionsBinder : BinderBase<TcpTraceRouteOptions>
             return bindingContext.ParseResult.GetValueForArgument<T>(a);
         }
 
+        var dstHost = ArgValue(_dstHostOrAddress);
+
+        var dstAddresses = Dns.GetHostAddresses(dstHost);
+
+        if (dstAddresses == null || dstAddresses.Length == 0)
+        {
+            throw new ArgumentException("Cannot resolve destination host");
+        }
+
         return new TcpTraceRouteOptions
         {
             MaxTtl = OptValue(_maxTtl),
@@ -87,7 +96,8 @@ internal class TcpTraceRouteOptionsBinder : BinderBase<TcpTraceRouteOptions>
             TypeOfService = OptValue(_typeOfServie),
             NumQueries = OptValue(_numQueries),
             SourceAddress = string.IsNullOrEmpty(OptValue(_srcAddress)) ? null : IPAddress.Parse(OptValue(_srcAddress)),
-            DestinationAddress = IPAddress.Parse(ArgValue(_dstAddress)),
+            DestinationAddress = dstAddresses[0],
+            DestinationHostName = dstHost,
             TrackPort = OptValue(_trackPort),
             UseDNat = OptValue(_dnat),
             ForcePort = OptValue(_forcePort),

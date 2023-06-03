@@ -6,9 +6,11 @@ public record TcpTraceRouteOptions
 {
     public ushort TcpDestinationPort { get; init; } = 80;
 
+    public string? DestinationHostName { get; set; } = null;
+
     public required IPAddress? SourceAddress { get; set; }
 
-    public required IPAddress DestinationAddress { get; init; }
+    public required IPAddress DestinationAddress { get; set; }
 
     public TimeSpan Timeout { get; init; } = TimeSpan.FromSeconds(3);
 
