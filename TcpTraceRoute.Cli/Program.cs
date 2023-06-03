@@ -10,6 +10,8 @@ using System.Net;
 using System.CommandLine.Parsing;
 using Microsoft.Extensions.Logging;
 using DnsClient;
+using System.Text;
+using System.Reflection.Emit;
 
 var numQueryOption = new Option<int>(new[] { "-q", "--num-queries" }, () => 3);
 var firstTtlOption = new Option<int>(new[] { "-f", "--first-ttl"},  () => 1);
@@ -31,11 +33,13 @@ var tcpAckOption = new Option<bool>("-A", () => false, "set ACK tcp flag");
 var tcpEcnOption = new Option<bool>("-E", () => false, "set ECN tcp flag");
 var tcpUrgOption = new Option<bool>("-U", () => false, "set URG tcp flag");
 var debugOption = new Option<bool>("-d", () => false, "debug mode");
+var dotOption = new Option<bool>("--dot", () => false, "produce dot graph");
 
 var rootCommand = new RootCommand()
 {
     debugOption,
     numericOption,
+    dotOption,
     numQueryOption,
     firstTtlOption,
     trackPortOption,
@@ -56,7 +60,7 @@ var rootCommand = new RootCommand()
     destPortArgument
 };
 
-static async Task DoTraceRoute(TcpTraceRouteOptions opts, bool debug, bool numeric)
+static async Task DoTraceRoute(TcpTraceRouteOptions opts, bool debug, bool numeric, bool generateDotGraph)
 {
     var logger = (Microsoft.Extensions.Logging.ILogger) NullLogger.Instance;
 
@@ -165,7 +169,7 @@ static async Task DoTraceRoute(TcpTraceRouteOptions opts, bool debug, bool numer
         }
     };
 
-    var dst = $"{opts.DestinationHostName}";
+    var dst = opts.DestinationHostName;
 
     if (opts.DestinationHostName != opts.DestinationAddress.ToString())
     {
@@ -192,16 +196,99 @@ static async Task DoTraceRoute(TcpTraceRouteOptions opts, bool debug, bool numer
         stdout.WriteLine("Destination not reached");
     }
 
+    if (generateDotGraph)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("digraph {");
+        sb.AppendLine("  {");
+        sb.AppendLine("    host");
+
+        var hops = result.Probes.Chunk(opts.NumQueries).ToArray();
+
+        foreach (var hop in hops)
+        {
+            var probe = hop.FirstOrDefault(x => x.Address != IPAddress.Any) ?? hop[0];
+
+            string hopHost = probe.Address == IPAddress.Any ? "*" : probe.Address.ToString();
+
+            if (!numeric)
+            {
+                try
+                {
+                    var hostEntry = dns.GetHostEntry(probe.Address);
+                    hopHost = hostEntry?.HostName ?? hopHost;
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, "DNS query failed for {ProbeAddress}", probe.Address);
+                }
+            }
+
+            var attrs = string.Empty;
+
+            if (hopHost == "*")
+            {
+                attrs += "color=red";
+            }
+
+            sb.AppendLine($"    {hop[0].Ttl}[label=\"{hopHost}\" {attrs}]");
+        }
+        sb.AppendLine("  }");
+
+        var totDelta = hops[0].Where(x => x.Address != IPAddress.Any && x.Delta > 0).Average(x => x.Delta);
+        var label = totDelta.ToString("0.000", CultureInfo.InvariantCulture) + " ms";
+        sb.AppendLine($"  host->1 [label=\"  {label}\"]");
+
+        for(var i = 1; i < result.HopsNumber; i++)
+        {
+            if (i + 1 <= result.HopsNumber)
+            {
+                var hop = hops[i];
+
+                label = string.Empty;
+                var attrs = string.Empty;
+                var avgDelta = -1.0;
+
+                if (hop.Any(x => x.Address != IPAddress.Any))
+                {
+                    avgDelta = hop.Where(x => x.Address != IPAddress.Any && x.Delta > 0).Average(x => x.Delta);
+                    totDelta += avgDelta;
+                }
+                else
+                {
+                    attrs = "color=red";
+                }
+                label = totDelta.ToString("0.000", CultureInfo.InvariantCulture) + " ms";
+                var hostDelta = avgDelta.ToString("0.000", CultureInfo.InvariantCulture) + " ms";
+
+                sb.AppendLine($"  host->{i + 1} [label=\"  {hostDelta}\" style=dotted]");
+                sb.AppendLine($"  {i}->{i + 1} [label=\"  {label}\"]");
+            }
+        }
+
+        sb.AppendLine("}");
+
+        var dot = sb.ToString();
+        var graphVizUrl = $"https://dreampuf.github.io/GraphvizOnline/#{Uri.EscapeDataString(dot)}";
+
+        Console.WriteLine("Dot graph: \n");
+        Console.WriteLine(dot);
+        Console.WriteLine("Rendered at: \n");
+        Console.WriteLine(graphVizUrl);
+    }
+
+
     stdout.WriteLine();
 }
 
 rootCommand.SetHandler(
-    async (debug, numeric, traceRouteOptions) => 
+    async (debug, numeric, generateDotGraph, traceRouteOptions) => 
     {
-       await DoTraceRoute(traceRouteOptions, debug, numeric);
+       await DoTraceRoute(traceRouteOptions, debug, numeric, generateDotGraph);
     },
     debugOption,
     numericOption,
+    dotOption,
     new TcpTraceRouteOptionsBinder(
         numQueryOption,
         firstTtlOption,
