@@ -86,6 +86,65 @@ Options:
 </pre>
 </details>
 
+<details>
+<summary>traceroute-net github.com -q 1 -n --dot </summary>
+  
+<pre>
+ Selected device Wi-Fi (Intel(R) Wi-Fi 6 AX201 160MHz), address 192.168.1.56, port 60563 for outgoing packets
+ Tracing the path to github.com (140.82.121.3) on TCP port 80, 30 hops max
+ 1  192.168.1.1        1.873 ms  1.196 ms  1.230 ms
+ [...TRUNCATED FOR BREVITY...]
+ 
+ digraph {
+  {
+    host
+    1[label="192.168.1.1" ]
+    2[label="151.6.142.56" ]
+    3[label="151.6.57.40" ]
+    4[label="151.6.0.190" ]
+    5[label="151.6.7.239" ]
+    6[label="80.81.194.26" ]
+    7[label="64.125.30.254" ]
+    8[label="64.125.29.65" ]
+    9[label="82.98.193.29" ]
+    10[label="*" color=red]
+    11[label="*" color=red]
+    12[label="140.82.121.4" ]
+  }
+  host->1 [label="  2.228 ms"]
+  host->2 [label="  8.137 ms" style=dotted]
+  1->2 [label="  10.364 ms"]
+  host->3 [label="  6.886 ms" style=dotted]
+  2->3 [label="  17.250 ms"]
+  host->4 [label="  26.925 ms" style=dotted]
+  3->4 [label="  44.175 ms"]
+  host->5 [label="  22.965 ms" style=dotted]
+  4->5 [label="  67.140 ms"]
+  host->6 [label="  23.855 ms" style=dotted]
+  5->6 [label="  90.995 ms"]
+  host->7 [label="  24.454 ms" style=dotted]
+  6->7 [label="  115.449 ms"]
+  host->8 [label="  62.802 ms" style=dotted]
+  7->8 [label="  178.252 ms"]
+  host->9 [label="  19.341 ms" style=dotted]
+  8->9 [label="  197.593 ms"]
+  host->10 [label="  -1.000 ms" style=dotted]
+  9->10 [label="  197.593 ms"]
+  host->11 [label="  -1.000 ms" style=dotted]
+  10->11 [label="  197.593 ms"]
+  host->12 [label="  19.376 ms" style=dotted]
+  11->12 [label="  216.969 ms"]
+}
+See rendered at:
+https://dreampuf.github.io/GraphvizOnline/#digraph%20%7B%0D%0A%20%20%7B%[...TRUNCATED...]
+</pre>
+  
+[See render at dreampuf.github.io/GraphvizOnline](https://dreampuf.github.io/GraphvizOnline/#digraph%20%7B%0D%0A%20%20%7B%0D%0A%20%20%20%20host%0D%0A%20%20%20%201%5Blabel%3D%22192.168.1.1%22%20%5D%0D%0A%20%20%20%202%5Blabel%3D%22151.6.142.56%22%20%5D%0D%0A%20%20%20%203%5Blabel%3D%22151.6.57.40%22%20%5D%0D%0A%20%20%20%204%5Blabel%3D%22151.6.0.190%22%20%5D%0D%0A%20%20%20%205%5Blabel%3D%22151.6.7.239%22%20%5D%0D%0A%20%20%20%206%5Blabel%3D%2280.81.194.26%22%20%5D%0D%0A%20%20%20%207%5Blabel%3D%2264.125.30.254%22%20%5D%0D%0A%20%20%20%208%5Blabel%3D%2264.125.29.65%22%20%5D%0D%0A%20%20%20%209%5Blabel%3D%2282.98.193.29%22%20%5D%0D%0A%20%20%20%2010%5Blabel%3D%22%2A%22%20color%3Dred%5D%0D%0A%20%20%20%2011%5Blabel%3D%22%2A%22%20color%3Dred%5D%0D%0A%20%20%20%2012%5Blabel%3D%22140.82.121.4%22%20%5D%0D%0A%20%20%7D%0D%0A%20%20host-%3E1%20%5Blabel%3D%22%20%202.228%20ms%22%5D%0D%0A%20%20host-%3E2%20%5Blabel%3D%22%20%208.137%20ms%22%20style%3Ddotted%5D%0D%0A%20%201-%3E2%20%5Blabel%3D%22%20%2010.364%20ms%22%5D%0D%0A%20%20host-%3E3%20%5Blabel%3D%22%20%206.886%20ms%22%20style%3Ddotted%5D%0D%0A%20%202-%3E3%20%5Blabel%3D%22%20%2017.250%20ms%22%5D%0D%0A%20%20host-%3E4%20%5Blabel%3D%22%20%2026.925%20ms%22%20style%3Ddotted%5D%0D%0A%20%203-%3E4%20%5Blabel%3D%22%20%2044.175%20ms%22%5D%0D%0A%20%20host-%3E5%20%5Blabel%3D%22%20%2022.965%20ms%22%20style%3Ddotted%5D%0D%0A%20%204-%3E5%20%5Blabel%3D%22%20%2067.140%20ms%22%5D%0D%0A%20%20host-%3E6%20%5Blabel%3D%22%20%2023.855%20ms%22%20style%3Ddotted%5D%0D%0A%20%205-%3E6%20%5Blabel%3D%22%20%2090.995%20ms%22%5D%0D%0A%20%20host-%3E7%20%5Blabel%3D%22%20%2024.454%20ms%22%20style%3Ddotted%5D%0D%0A%20%206-%3E7%20%5Blabel%3D%22%20%20115.449%20ms%22%5D%0D%0A%20%20host-%3E8%20%5Blabel%3D%22%20%2062.802%20ms%22%20style%3Ddotted%5D%0D%0A%20%207-%3E8%20%5Blabel%3D%22%20%20178.252%20ms%22%5D%0D%0A%20%20host-%3E9%20%5Blabel%3D%22%20%2019.341%20ms%22%20style%3Ddotted%5D%0D%0A%20%208-%3E9%20%5Blabel%3D%22%20%20197.593%20ms%22%5D%0D%0A%20%20host-%3E10%20%5Blabel%3D%22%20%20-1.000%20ms%22%20style%3Ddotted%5D%0D%0A%20%209-%3E10%20%5Blabel%3D%22%20%20197.593%20ms%22%5D%0D%0A%20%20host-%3E11%20%5Blabel%3D%22%20%20-1.000%20ms%22%20style%3Ddotted%5D%0D%0A%20%2010-%3E11%20%5Blabel%3D%22%20%20197.593%20ms%22%5D%0D%0A%20%20host-%3E12%20%5Blabel%3D%22%20%2019.376%20ms%22%20style%3Ddotted%5D%0D%0A%20%2011-%3E12%20%5Blabel%3D%22%20%20216.969%20ms%22%5D%0D%0A%7D%0D%0A=)
+
+<image src="/Docs/traceroute.svg">
+  
+</details>
+
 ## Code
 ```csharp
 var dstAddress = IPAddress.Parse("8.8.8.8");
