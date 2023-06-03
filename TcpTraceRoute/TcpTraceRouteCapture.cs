@@ -666,40 +666,6 @@ public class TcpTraceRouteCapture : IDisposable
 
                 if (cancellation.IsCancellationRequested) break;
 
-                /*
-                if (q == 1)
-                {
-                    var status = _currProbe.String + (string.IsNullOrEmpty(_currProbe.State) ? string.Empty : $"[{_currProbe.State}] ");
-                    var hostNameOrAddress = _currProbe.Address == IPAddress.Any ? "" : _currProbe.Address.ToString();
-                    if (_opts.ResolveNames)
-                    {
-                        try
-                        {
-                            hostNameOrAddress = Dns.GetHostEntry(_currProbe.Address)?.HostName ?? hostNameOrAddress;
-                        }
-                        catch
-                        {
-
-                        }
-                    }
-                    Console.Write($"{ttl,-2} {hostNameOrAddress} {status}");
-                }
-
-                if (_currProbe.Address != IPAddress.Any && handled)
-                {
-                    Console.Write($"{_currProbe.Delta.ToString("0.####", CultureInfo.InvariantCulture)} ms  ");
-                }
-                else
-                {
-                    Console.Write("*");
-                }
-
-                if (q == _opts.NumQueries)
-                { 
-                    Console.WriteLine();
-                }
-                */
-
                 ProbeCompleted?.Invoke(this, new(_currProbe));
 
                 probes.Add(_currProbe);
