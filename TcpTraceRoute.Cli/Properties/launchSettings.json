@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TcpTraceRoute.Cli": {
+      "commandName": "Project",
+      "commandLineArgs": "8.8.8.8 -q 1"
+    }
+  }
+}
