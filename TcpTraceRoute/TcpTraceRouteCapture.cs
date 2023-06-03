@@ -1,5 +1,4 @@
-﻿using Humanizer;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using PacketDotNet;
 using PacketDotNet.Utils;
 using PacketDotNet.Utils.Converters;
@@ -10,9 +9,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Net;
 using System.Net.NetworkInformation;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading;
 using TcpTraceRoute.Helpers;
 
 namespace TcpTraceRoute;
