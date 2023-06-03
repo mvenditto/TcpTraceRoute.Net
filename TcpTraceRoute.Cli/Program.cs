@@ -8,6 +8,8 @@ using TcpTraceRoute.Helpers;
 using System.Globalization;
 using System.Net;
 using System.CommandLine.Parsing;
+using Microsoft.Extensions.Logging;
+using DnsClient;
 
 var numQueryOption = new Option<int>(new[] { "-q", "--num-queries" }, () => 3);
 var firstTtlOption = new Option<int>(new[] { "-f", "--first-ttl"},  () => 1);
@@ -23,6 +25,7 @@ var destPortArgument = new Argument<ushort>("dst-port", () => 80);
 var dnatOption = new Option<bool>(new[] { "--dnat" }, () => false);
 var trackPortOption = new Option<bool>(new[] { "--track-port" }, () => false);
 var forcePortOption = new Option<bool>(new[] { "-P", "--force-port" }, () => false);
+var numericOption = new Option<bool>("-n", () => true, "dot not resolve probe hostname");
 var tcpSynOption = new Option<bool>("-S", () => true, "set SYN tcp flag");
 var tcpAckOption = new Option<bool>("-A", () => false, "set ACK tcp flag");
 var tcpEcnOption = new Option<bool>("-E", () => false, "set ECN tcp flag");
@@ -32,6 +35,7 @@ var debugOption = new Option<bool>("-d", () => false, "debug mode");
 var rootCommand = new RootCommand()
 {
     debugOption,
+    numericOption,
     numQueryOption,
     firstTtlOption,
     trackPortOption,
@@ -52,7 +56,7 @@ var rootCommand = new RootCommand()
     destPortArgument
 };
 
-static async Task DoTraceRoute(TcpTraceRouteOptions opts, bool debug)
+static async Task DoTraceRoute(TcpTraceRouteOptions opts, bool debug, bool numeric)
 {
     var logger = (Microsoft.Extensions.Logging.ILogger) NullLogger.Instance;
 
@@ -112,6 +116,11 @@ static async Task DoTraceRoute(TcpTraceRouteOptions opts, bool debug)
 
     stdout.WriteLine();
 
+    var dns = new LookupClient(new LookupClientOptions 
+    { 
+        Timeout = TimeSpan.FromMilliseconds(1000),
+    });
+
     traceroute.ProbeCompleted += (_, e) =>
     {
         var probe = e.Probe;
@@ -126,9 +135,23 @@ static async Task DoTraceRoute(TcpTraceRouteOptions opts, bool debug)
         // first query, write the host
         if (probe.QueryNum == 1)
         {
-            var hopAddr = probe.Address == IPAddress.Any ? "*" : probe.Address.ToString();
+            string hopHost = probe.Address == IPAddress.Any ? "*" : probe.Address.ToString();
+
+            if (!numeric)
+            {
+                try
+                {
+                    var hostEntry = dns.GetHostEntry(probe.Address);
+                    hopHost = hostEntry?.HostName ?? hopHost;
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, "DNS query failed for {ProbeAddress}", probe.Address);
+                }
+            }
+
             var state = string.IsNullOrEmpty(probe.State) ? "" : $"[{probe.State}]";
-            stdout.Write($"{probe.Ttl,2}  {hopAddr,-15}  {probe.String ?? ""}{state}  ");
+            stdout.Write($"{probe.Ttl,2}  {hopHost,-15}  {probe.String ?? ""}{state}  ");
         }
 
         // write the query latency
@@ -173,11 +196,12 @@ static async Task DoTraceRoute(TcpTraceRouteOptions opts, bool debug)
 }
 
 rootCommand.SetHandler(
-    async (debug, traceRouteOptions) => 
+    async (debug, numeric, traceRouteOptions) => 
     {
-       await DoTraceRoute(traceRouteOptions, debug);
+       await DoTraceRoute(traceRouteOptions, debug, numeric);
     },
     debugOption,
+    numericOption,
     new TcpTraceRouteOptionsBinder(
         numQueryOption,
         firstTtlOption,
