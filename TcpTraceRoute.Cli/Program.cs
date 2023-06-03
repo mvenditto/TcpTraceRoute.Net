@@ -261,7 +261,7 @@ static async Task DoTraceRoute(TcpTraceRouteOptions opts, bool debug, bool numer
                 label = totDelta.ToString("0.000", CultureInfo.InvariantCulture) + " ms";
                 var hostDelta = avgDelta.ToString("0.000", CultureInfo.InvariantCulture) + " ms";
 
-                sb.AppendLine($"  host->{i + 1} [label=\"  {hostDelta}\" style=dotted]");
+                sb.AppendLine($"  host->{i + 1} [label=\"  {hostDelta}\" style=dotted {attrs}]");
                 sb.AppendLine($"  {i}->{i + 1} [label=\"  {label}\"]");
             }
         }
