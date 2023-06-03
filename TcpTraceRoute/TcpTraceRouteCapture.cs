@@ -75,6 +75,7 @@ public class TcpTraceRouteCapture : IDisposable
         _networkInterface = networkInterface;
         _srcAddress = options.SourceAddress;
         _dstAddress = options.DestinationAddress;
+        _readTimeoutMilliseconds = packetReadTimeoutMilliseconds;
 
         Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
@@ -109,17 +110,13 @@ public class TcpTraceRouteCapture : IDisposable
                 throw new Exception("Unable to resolve physical address.");
             }
         }
-
-        _readTimeoutMilliseconds = packetReadTimeoutMilliseconds;
     }
 
     private void Initialize(TcpTraceRouteOptions o)
     {
         if (!o.ForcePort)
-        {
-                o.SourcePort = NetworkHelpers.AllocatePort(o.SourcePort);
-        }
-
+            o.SourcePort = NetworkHelpers.AllocatePort(o.SourcePort);
+        
         if (o.FirstTtl <= 0 || o.MaxTtl <= 0)
             throw new ArgumentException("TTL must be greater than 0");
 
