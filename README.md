@@ -1,6 +1,6 @@
 # TcpTraceRoute
 
-A TCP-based traceroute library and tool inspired by the original [tcptraceroute](https://github.com/mct/tcptraceroute) tool.
+A TCP-based traceroute library and tool inspired by the original [`tcptraceroute`](https://github.com/mct/tcptraceroute).
 
 Built with [packetnet](https://github.com/dotpcap/packetnet) and [sharppcap](https://github.com/dotpcap/sharppcap).
 
@@ -123,3 +123,10 @@ if (!destinationReached)
     Console.WriteLine("Destination not reached");
 }
 ```
+    
+## References
+  - [tcptraceroute](https://github.com/mct/tcptraceroute)
+  - [packetnet](https://github.com/dotpcap/packetnet)
+  - [sharppcap](https://github.com/dotpcap/sharppcap)
+  - [nmap - Host Discovery Techniques](https://nmap.org/book/host-discovery-techniques.html)
+    
