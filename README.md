@@ -22,6 +22,7 @@ Arguments:
 
 Options:
   -d                               debug mode [default: False]
+  -n                               do not resolve probe hostname [default: True]
   -q, --num-queries <num-queries>  [default: 3]
   -f, --first-ttl <first-ttl>      [default: 1]
   --track-port                     [default: False]
