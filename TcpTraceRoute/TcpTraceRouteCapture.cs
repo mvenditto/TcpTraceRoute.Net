@@ -577,7 +577,7 @@ public class TcpTraceRouteCapture : IDisposable
 
     private TcpTraceRouteResult RunInternal(CancellationToken cancellation = default)
     {
-        _device.Open(DeviceModes.Promiscuous, _readTimeoutMilliseconds);
+        _device.Open(_readTimeoutMilliseconds);
         _device.StopCaptureTimeout = _opts.Timeout;
 
         SetCaptureFilter();
