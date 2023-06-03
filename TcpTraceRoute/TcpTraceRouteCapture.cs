@@ -604,7 +604,7 @@ public class TcpTraceRouteCapture : IDisposable
                     Ttl = ttl,
                     Address = IPAddress.Any,
                     DNatIp = IPAddress.Any,
-                    SrcPort = 38529,
+                    SrcPort = _opts.SourcePort,
                     Id = (ushort) Random.Shared.Next()
                 };
 
